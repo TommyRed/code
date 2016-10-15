@@ -1,5 +1,7 @@
 package com.company.domain;
 
+import com.company.domain.impl.WeaponImpl;
+
 import java.util.List;
 
 /**
@@ -8,13 +10,12 @@ import java.util.List;
 public interface Character {
     String getName();
     int getStrength();
-
-    int getAttackNumber();
-
-    Item getWeapon();
-    void setWeapon(Item item);
-
     int getHP();
+    int getAttackNumber();
+    List<Item> getItems();
+    Item getWeapon();
+
+    void setWeapon(WeaponImpl weapon);
     void setHP(int HP);
 
     int rollDiceK6();
@@ -23,10 +24,7 @@ public interface Character {
     void printCharacterInfo();
     void printCharacterInventory();
 
-    List<Item> getItems();
     void addItem(Item item);
 
     void suicide();
-
-    void attack(Character enemy);
 }

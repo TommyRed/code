@@ -5,8 +5,7 @@ package com.company.domain;
  */
 public interface Item {
     String getName();
+    ItemType getType();
 
-    int getAttackNumber();
-    int getDurability();
-    int getWeight();
+    void setName(String name);
 }

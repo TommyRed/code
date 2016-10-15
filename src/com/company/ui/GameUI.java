@@ -2,10 +2,8 @@ package com.company.ui;
 
 import com.company.domain.*;
 import com.company.domain.Character;
-import com.company.domain.impl.BeastImpl;
-import com.company.domain.impl.OptionImpl;
+import com.company.domain.impl.ArenaImpl;
 
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,28 +22,29 @@ public class GameUI {
         }
 
         //Print name of current location
-        System.out.println("\n\n#-# Current location: " + location.getText() + " #-#");
+        System.out.println("\n--------------------------------\nCurrent location: " +
+                location.getText() + "\n--------------------------------");
 
         /*
             Check if location is safezone
                 true    -> Do not generate enemy
                 false   -> Generate enemy if player rolls preset values
         */
-        if (!location.getSafety()) {
-
-            //Player rolls dices and based on its outcome generate enemy
-            Character enemy = location.generateEnemy(player);
-
-            //Check if enemy were generated
-            if (enemy != null) {
-
-                //Call for combat function and wait for it's outcome
-                if (combat(enemy, player)) {
-                    //Print name of location after combat is done
-                    System.out.println("\n\n#-# Current location: " + location.getText() + " #-#");
-                }
-            }
-        }
+//        if (!location.getSafety()) {
+//
+//            //Player rolls dices and based on its outcome generate enemy
+//            Character enemy = location.generateEnemy(player);
+//
+//            //Check if enemy were generated
+//            if (enemy != null) {
+//
+//                //Call for combat function and wait for it's outcome
+//                if (combat(enemy, player)) {
+//                    //Print name of location after combat is done
+//                    System.out.println("\n\n#-# Current location: " + location.getText() + " #-#");
+//                }
+//            }
+//        }
 
         //Print options and direction only if player is alive
         if (player.getHP() > 0) {
@@ -63,7 +62,7 @@ public class GameUI {
                 true    -> offer options
                 false   -> proceed
          */
-        if (player.getHP() >= 0) {
+        if (player.getHP() > 0) {
             //Scan for user input
             Scanner sc = new Scanner(System.in);
             System.out.println("\nEnter option from above\n");
@@ -111,18 +110,12 @@ public class GameUI {
         //Print header for directions
         System.out.println("\nAvailable directions from this room");
 
-        //Loop through all directions available from location
-        for (Direction direction : location.getDirections()) {
-            //Print each direction option
-            System.out.println(index + ") " + direction.getName());
-            //Add 1 to index for indexing both direction and options
-            index++;
-        }
+        //Print all available directions
+        index = printDirections(location.getDirections(), index);
 
         //splitIndex[0] is used to split directions and options
         splitIndex[0] = index - 1;
 
-        //Print header for options
         System.out.println("\nAvailable options for this room");
 
         //Check whether there are any options in player's location
@@ -141,6 +134,15 @@ public class GameUI {
         } else {
             System.out.println("    ...there are no options for this room");
         }
+    }
+
+    private int printDirections(List<Direction> directions, int index){
+        for (Direction direction : directions) {
+            //Print each option
+            System.out.println(index + ") " + direction.getName());
+            index++;
+        }
+        return index;
     }
 
     private int printOptions(List<Option> options, int index) {
@@ -173,26 +175,42 @@ public class GameUI {
     }
 
     private boolean endGame(Character player) {
-        if (player.getHP() <= 0)
-            return true;
-
-        return false;
+        if (player.getHP() <= 0) return true;
+        else return false;
     }
+
+    /*
+        TODO Combat system
+     */
 
     private boolean combat(Character enemy, Player player) {
         //Setup scanner
         Scanner sc = new Scanner(System.in);
-        //Setup value for indexing rounds
-        int roundIndex = 1;
 
         System.out.println("\n\n    You were attacked by " + enemy.getName() + "\n\n");
+
+//        Listener listener = (player1, enemy1) -> {
+//            System.out.println("New round");
+//        };
+
+        Listener listener = new Listener() {
+            @Override
+            public void onNewRound(Player player, Character enemy) {
+
+            }
+
+            @Override
+            public void onAttack(Character character) {
+                System.out.println(character.getHP() + "hp | -" + 5);
+            }
+        };
 
         /*
             Call for recursive combat round and wait for it's outcome
                 true    -> Player survived and killed enemy
                 false   -> Player was succesfully killed by the enemy
          */
-        if (combatRound(player, enemy, sc, roundIndex)) {
+        if (combatRound(player, enemy, sc, listener)) {
             System.out.println("\n    Well fought!\nyou survived with: " + player.getHP() + " hp");
             return true;
         } else {
@@ -201,86 +219,93 @@ public class GameUI {
         }
     }
 
-    private boolean combatRound(Player player, Character enemy, Scanner sc, int roundIndex) {
-        int selectedOption = combatOptions(roundIndex, sc);
-        roundIndex++;
+    private boolean combatRound(Player player, Character enemy, Scanner sc, Listener listener) {
 
-        /*
-            Player and enemy are rolling for initiative
-            one with higher initiative attacks first
-         */
-        int playerInitiative = player.rollDiceK6();
-        int enemyInitiative = enemy.rollDiceK6();
+        Arena combatArena = new ArenaImpl(player, enemy, listener);
+        combatArena.newRound();
 
-        //If player selected suicide -> kill him
-        if (selectedOption == 2)
-            player.suicide();
 
-        //If player selected to attack proceed inside of condition
-        if (selectedOption == 1) {
 
-            //Setup attack values for both characters
-            int playersAtatck = enemy.rollDiceK6() - (player.getAttackNumber() + player.rollDiceK6());
-            int enemysAttack = player.rollDiceK6() - (enemy.getAttackNumber() + enemy.rollDiceK6());
-
-            //If player has higher initiative => player attacks first
-            if (playerInitiative > enemyInitiative) {
-                //Player attacks first
-                System.out.println(player.getName() + " attacks " + enemy.getName() + " | " + playersAtatck + "hp");
-                //Player is attacking
-                enemy.setHP(enemy.getHP() + playersAtatck);
-
-                //If enemy is still alive, then he attacks
-                if (enemy.getHP() > 0) {
-                    System.out.println(enemy.getName() + " attacks " + player.getName() + " |" + enemysAttack + "hp");
-
-                    //Player is attacking
-                    player.setHP(player.getHP() + enemysAttack);
-                }
-            /*
-                If both have the same initiative then both attack simultaneously
-             */
-            } else if (playerInitiative == enemyInitiative) {
-                //Player and enemy are attacking simultaneously
-                System.out.println(enemy.getName() + " attacks " + player.getName() + " | " + enemysAttack + "hp");
-                System.out.println(player.getName() + " attacks " + enemy.getName() + " | " + playersAtatck + "hp");
-
-                //Enemy is attacking
-                enemy.setHP(enemy.getHP() + playersAtatck);
-                //Player is attacking
-                player.setHP(player.getHP() + enemysAttack);
-
-                //If enemy has higher initiative => enemy attacks first
-            } else {
-                //Enemy attacks first
-                System.out.println(enemy.getName() + " attacks " + player.getName() + " |" + enemysAttack + "hp");
-
-                //Player is attacking
-                player.setHP(player.getHP() + enemysAttack);
-
-                if (player.getHP() > 0) {
-                    System.out.println(player.getName() + " attacks " + enemy.getName() + " | " + playersAtatck + "hp");
-
-                    //Enemy is attacking
-                    enemy.setHP(enemy.getHP() + playersAtatck);
-                }
-            }
-        }
-
-        //Print enemy's and player's HP statuses
-        System.out.println("\n  " + player.getName() + "'s HP: " + player.getHP() + "\n   " + enemy.getName() + "'s Hp: " + enemy.getHP());
-
-        //Check for kill
-        if (enemy.getHP() <= 0 && player.getHP() > 0) {
-            //If player is still alive and enemy is dead
-            return true;
-        } else if (enemy.getHP() > 0 && player.getHP() <= 0) {
-            //If player died and monster is still alive
-            return false;
-        }
+//
+//        int selectedOption = combatOptions(roundIndex, sc);
+//        roundIndex++;
+//
+//        /*
+//            Player and enemy are rolling for initiative
+//            one with higher initiative attacks first
+//         */
+//        int playerInitiative = player.rollDiceK6();
+//        int enemyInitiative = enemy.rollDiceK6();
+//
+//        //If player selected suicide -> kill him
+//        if (selectedOption == 2)
+//            player.suicide();
+//
+//        //If player selected to attack proceed inside of condition
+//        if (selectedOption == 1) {
+//
+//            //Setup attack values for both characters
+//            int playersAtatck = enemy.rollDiceK6() - (player.getAttackNumber() + player.rollDiceK6());
+//            int enemysAttack = player.rollDiceK6() - (enemy.getAttackNumber() + enemy.rollDiceK6());
+//
+//            //If player has higher initiative => player attacks first
+//            if (playerInitiative > enemyInitiative) {
+//                //Player attacks first
+//                System.out.println(player.getName() + " attacks " + enemy.getName() + " | " + playersAtatck + "hp");
+//                //Player is attacking
+//                enemy.setHP(enemy.getHP() + playersAtatck);
+//
+//                //If enemy is still alive, then he attacks
+//                if (enemy.getHP() > 0) {
+//                    System.out.println(enemy.getName() + " attacks " + player.getName() + " |" + enemysAttack + "hp");
+//
+//                    //Player is attacking
+//                    player.setHP(player.getHP() + enemysAttack);
+//                }
+//            /*
+//                If both have the same initiative then both attack simultaneously
+//             */
+//            } else if (playerInitiative == enemyInitiative) {
+//                //Player and enemy are attacking simultaneously
+//                System.out.println(enemy.getName() + " attacks " + player.getName() + " | " + enemysAttack + "hp");
+//                System.out.println(player.getName() + " attacks " + enemy.getName() + " | " + playersAtatck + "hp");
+//
+//                //Enemy is attacking
+//                enemy.setHP(enemy.getHP() + playersAtatck);
+//                //Player is attacking
+//                player.setHP(player.getHP() + enemysAttack);
+//
+//                //If enemy has higher initiative => enemy attacks first
+//            } else {
+//                //Enemy attacks first
+//                System.out.println(enemy.getName() + " attacks " + player.getName() + " |" + enemysAttack + "hp");
+//
+//                //Player is attacking
+//                player.setHP(player.getHP() + enemysAttack);
+//
+//                if (player.getHP() > 0) {
+//                    System.out.println(player.getName() + " attacks " + enemy.getName() + " | " + playersAtatck + "hp");
+//
+//                    //Enemy is attacking
+//                    enemy.setHP(enemy.getHP() + playersAtatck);
+//                }
+//            }
+//        }
+//
+//        //Print enemy's and player's HP statuses
+//        System.out.println("\n  " + player.getName() + "'s HP: " + player.getHP() + "\n   " + enemy.getName() + "'s Hp: " + enemy.getHP());
+//
+//        //Check for kill
+//        if (enemy.getHP() <= 0 && player.getHP() > 0) {
+//            //If player is still alive and enemy is dead
+//            return true;
+//        } else if (enemy.getHP() > 0 && player.getHP() <= 0) {
+//            //If player died and monster is still alive
+//            return false;
+//        }
 
         //Call next round of combat
-        return combatRound(player, enemy, sc, roundIndex);
+        return combatRound(player, enemy, sc, listener);
     }
 
     private int combatOptions(int index, Scanner sc) {

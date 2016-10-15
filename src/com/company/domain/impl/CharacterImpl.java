@@ -2,32 +2,74 @@ package com.company.domain.impl;
 
 import com.company.domain.Character;
 import com.company.domain.Item;
-import com.company.domain.Option;
 import com.company.domain.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
 
 /**
- * Created by Tomáš Rechtig on 08.10.2016.
+ * Created by Tomáš Rechtig on 09.10.2016.
  */
-public class CharacterImpl implements Player {
+public class CharacterImpl implements Character{
 
     private String name;
     private int HP;
     private int strength;
     private List<Item> items;
-    private List<Option> options;
     private Item weapon;
 
-    public CharacterImpl(String name) {
-        this.name = name;
-        this.HP = 100;
-        this.strength = rollDiceK6() + rollDiceK6();
+    private static final int DRAKE = 1;
+    private static final int ORC = 2;
+    private static final int GHOST = 3;
+    private static final int WOLF = 4;
+    private static final int GOBLIN = 5;
+    private static final int CHICKEN = 6;
+
+    CharacterImpl(int monsterType) {
         this.items = new ArrayList<>();
-        this.options = new ArrayList<>();
+        createMonster(monsterType);
+    }
+
+    private void createMonster(int monsterType){
+        switch (monsterType){
+            case DRAKE:
+                this.name = "Drake";
+                this.HP = 80;
+                this.strength = 15;
+//                this.weapon = new ItemImpl("Dragon's claw", 10, 15, 0);
+                break;
+            case ORC:
+                this.name = "Orc";
+                this.HP = 100;
+                this.strength = 10;
+//                this.weapon = new ItemImpl("Orcish sword", 10, 10, 0);
+                break;
+            case GHOST:
+                this.name = "Ghost";
+                this.HP = 40;
+                this.strength = 6;
+//                this.weapon = new ItemImpl("Ghost's breath", 10, 10, 0);
+                break;
+            case WOLF:
+                this.name = "Wolf";
+                this.HP = 50;
+                this.strength = 8;
+//                this.weapon = new ItemImpl("Wolfs's claw", 10, 8, 0);
+                break;
+            case GOBLIN:
+                this.name = "Goblin";
+                this.HP = 35;
+                this.strength = 4;
+//                this.weapon = new ItemImpl("Goblin's dagger", 10, 5, 0);
+                break;
+            case CHICKEN:
+                this.name = "Epic-Chicken";
+                this.HP = 10;
+                this.strength = 30;
+//                this.weapon = new ItemImpl("Chicken's epic beak", 10, 10, 0);
+                break;
+        }
     }
 
     @Override
@@ -40,55 +82,46 @@ public class CharacterImpl implements Player {
         return HP;
     }
 
-    @Override
-    public void setHP(int HP) {
-        this.HP = HP;
-    }
 
     @Override
     public int getStrength() {
         return strength;
     }
 
+    // TODO
     @Override
-    public int getAttackNumber() {
-        try {
-            return weapon.getAttackNumber() + strength;
-        } catch (NullPointerException err) {
-            System.out.println("    " + this.name + " does not have a weapon");
-        }
-        return strength;
+    public int getAttackNumber(){
+//        try {
+//            return weapon.getAttackNumber() + strength + rollDiceK6();
+//        }catch (NullPointerException err){
+//            System.out.println("    " + this.name + " does not have a weapon");
+//        }
+        return strength + rollDiceK6();
     }
 
     @Override
-    public Item getWeapon() {
+    public List<Item> getItems() {
+        return items;
+    }
+
+    @Override
+    public Item getWeapon(){
         try {
             return weapon;
-        } catch (NullPointerException err) {
+        }catch (NullPointerException err){
             System.out.println("    " + this.name + " does not have a weapon");
         }
         return null;
     }
 
     @Override
-    public void setWeapon(Item item) {
-        this.weapon = item;
+    public void setWeapon(WeaponImpl weapon){
+        this.weapon = weapon;
     }
 
     @Override
-    public List getItems() {
-        return items;
-    }
-
-    @Override
-    public void addItem(Item item) {
-        items.add(item);
-        System.out.println("You now carry: " + item.getName());
-    }
-
-    @Override
-    public void dropItem(Item item) {
-        items.remove(item);
+    public void setHP(int HP) {
+        this.HP = HP;
     }
 
     @Override
@@ -122,37 +155,12 @@ public class CharacterImpl implements Player {
     }
 
     @Override
+    public void addItem(Item item) {
+        items.add(item);
+    }
+
+    @Override
     public void suicide() {
         this.HP = 0;
-    }
-
-    @Override
-    public List<Option> getOptions() {
-        return options;
-    }
-
-    @Override
-    public void addOption(String text, int id, Item item) {
-        addOption(new OptionImpl(text, id, item));
-    }
-
-    @Override
-    public void addOption(String text, int id) {
-        addOption(new OptionImpl(text, id));
-    }
-
-    @Override
-    public void addOption(Option option) {
-        options.add(option);
-    }
-
-    @Override
-    public void removeOption(Option option) {
-        options.remove(option);
-    }
-
-    @Override
-    public void attack(Character enemy) {
-        enemy.setHP(enemy.getHP() - getAttackNumber());
     }
 }

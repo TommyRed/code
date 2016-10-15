@@ -75,7 +75,7 @@ public class LocationImpl implements Location {
      */
     @Override
     public void addItem(String name, int durability, int attackNumber, int weight) {
-        addItem(new ItemImpl(name, durability, attackNumber, weight));
+//        addItem(new ItemImpl(name, durability, attackNumber, weight));
     }
 
     /*
@@ -98,17 +98,17 @@ public class LocationImpl implements Location {
         int playersLuck = player.rollDiceK12() + player.rollDiceK12();
         switch (playersLuck){
             case 2:
-                return new BeastImpl(6);
+                return new CharacterImpl(6);
             case 6:
-                return new BeastImpl(5);
+                return new CharacterImpl(5);
             case 10:
-                return new BeastImpl(4);
+                return new CharacterImpl(4);
             case 14:
-                return new BeastImpl(3);
+                return new CharacterImpl(3);
             case 18:
-                return new BeastImpl(2);
+                return new CharacterImpl(2);
             case 24:
-                return new BeastImpl(1);
+                return new CharacterImpl(1);
         }
         return null;
     }

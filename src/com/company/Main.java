@@ -1,11 +1,11 @@
 package com.company;
 
-import com.company.domain.Character;
+import com.company.domain.Item;
 import com.company.domain.Location;
 import com.company.domain.Player;
-import com.company.domain.impl.ItemImpl;
+import com.company.domain.ItemType;
 import com.company.domain.impl.LocationImpl;
-import com.company.domain.impl.CharacterImpl;
+import com.company.domain.impl.PlayerImpl;
 import com.company.ui.GameUI;
 
 import java.util.Scanner;
@@ -48,15 +48,14 @@ public class Main {
             -> ground hallway
          */
         kitchen.addDirection("Go to the hallway", hallway);
-        kitchen.addItem("Knife", 10, 5, 2);
-        kitchen.addItem("Door", 100, 50, 40);
+        kitchen.addItem(ItemType.ARMOR.createItem("Leather Armor", 10));
 
         /*
             Available directions
             -> ground hallway
          */
         livingRoom.addDirection("Go to the hallway", hallway);
-        livingRoom.addItem("Key", 0, 0, 1);
+        livingRoom.addItem(ItemType.WEAPON.createItem("Axe", 20));
 
         /*
             Available directions
@@ -78,13 +77,13 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         System.out.println("Write your name:");
 
-        Player player = new CharacterImpl(sc.nextLine());
+        Player player = new PlayerImpl(sc.nextLine());
         player.printCharacterInfo();
         player.addOption("Do nothing and rest", 0);
         player.addOption("Suicide", 66);
         player.addOption("Look into inventory", 2);
-        player.setWeapon(new ItemImpl("Sword", 10, 10, 3));
-        player.addItem(player.getWeapon());
+//        player.setWeapon(new ItemImpl("Sword", 10, 10, 3));
+//        player.addItem(player.getWeapon());
 //        player.addOption("Drop " + player.getWeapon().getName(), 4, player.getWeapon());
 
         return player;

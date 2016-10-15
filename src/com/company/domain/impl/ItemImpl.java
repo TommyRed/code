@@ -1,22 +1,23 @@
 package com.company.domain.impl;
 
 import com.company.domain.Item;
+import com.company.domain.ItemType;
 
 /**
- * Created by Tomáš Rechtig on 08.10.2016.
+ * @author Tomáš Rechtig on 08.10.2016.
  */
 public class ItemImpl implements Item {
-
     private String name;
-    private int durability;
-    private int attackNumber;
-    private int weight;
 
-    public ItemImpl(String name, int durability, int attackNumber, int weight) {
-        this.name = name;
-        this.durability = durability;
-        this.attackNumber = attackNumber;
-        this.weight = weight;
+    private ItemType type;
+
+    public ItemImpl(String customName, ItemType type) {
+        this.name = customName;
+        this.type = type;
+    }
+
+    public ItemType getType() {
+        return type;
     }
 
     @Override
@@ -25,17 +26,7 @@ public class ItemImpl implements Item {
     }
 
     @Override
-    public int getAttackNumber() {
-        return attackNumber;
-    }
-
-    @Override
-    public int getDurability() {
-        return durability;
-    }
-
-    @Override
-    public int getWeight() {
-        return weight;
+    public void setName(String name) {
+        this.name = name;
     }
 }
