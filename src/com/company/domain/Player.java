@@ -1,5 +1,7 @@
 package com.company.domain;
 
+import com.company.domain.impl.PotionImpl;
+
 import java.util.List;
 
 /**
@@ -13,4 +15,7 @@ public interface Player extends Character {
     void removeOption(Option option);
 
     void dropItem(Item item);
+
+    boolean hasPotion();
+    void usePotion(PotionImpl potion);
 }

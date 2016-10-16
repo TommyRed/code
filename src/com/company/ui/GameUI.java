@@ -3,6 +3,7 @@ package com.company.ui;
 import com.company.domain.*;
 import com.company.domain.Character;
 import com.company.domain.impl.ArenaImpl;
+import com.company.domain.impl.ListenerImpl;
 
 import java.util.List;
 import java.util.Scanner;
@@ -30,21 +31,21 @@ public class GameUI {
                 true    -> Do not generate enemy
                 false   -> Generate enemy if player rolls preset values
         */
-//        if (!location.getSafety()) {
-//
-//            //Player rolls dices and based on its outcome generate enemy
-//            Character enemy = location.generateEnemy(player);
-//
-//            //Check if enemy were generated
-//            if (enemy != null) {
-//
-//                //Call for combat function and wait for it's outcome
-//                if (combat(enemy, player)) {
-//                    //Print name of location after combat is done
-//                    System.out.println("\n\n#-# Current location: " + location.getText() + " #-#");
-//                }
-//            }
-//        }
+        if (!location.getSafety()) {
+
+            //Player rolls dices and based on its outcome generate enemy
+            Character enemy = location.generateEnemy(player);
+
+            //Check if enemy were generated
+            if (enemy != null) {
+
+                //Call for combat function and wait for it's outcome
+                if (combat(enemy, player)) {
+                    //Print name of location after combat is done
+                    System.out.println("#-# Current location: " + location.getText() + " #-#");
+                }
+            }
+        }
 
         //Print options and direction only if player is alive
         if (player.getHP() > 0) {
@@ -183,50 +184,17 @@ public class GameUI {
         TODO Combat system
      */
 
-    private boolean combat(Character enemy, Player player) {
-        //Setup scanner
-        Scanner sc = new Scanner(System.in);
+    private boolean combat(Character character, Player player) {
+        System.out.println("\n\n    You were attacked by " + character.getName());
 
-        System.out.println("\n\n    You were attacked by " + enemy.getName() + "\n\n");
+        Arena combatArena = new ArenaImpl(player, character, new ListenerImpl());
 
-//        Listener listener = (player1, enemy1) -> {
-//            System.out.println("New round");
-//        };
-
-        Listener listener = new Listener() {
-            @Override
-            public void onNewRound(Player player, Character enemy) {
-
-            }
-
-            @Override
-            public void onAttack(Character character) {
-                System.out.println(character.getHP() + "hp | -" + 5);
-            }
-        };
-
-        /*
-            Call for recursive combat round and wait for it's outcome
-                true    -> Player survived and killed enemy
-                false   -> Player was succesfully killed by the enemy
-         */
-        if (combatRound(player, enemy, sc, listener)) {
-            System.out.println("\n    Well fought!\nyou survived with: " + player.getHP() + " hp");
-            return true;
-        } else {
-            System.out.println("\nWell fought, but you died and " + enemy.getName() + " raped your wife!");
-            return false;
-        }
+        return combatArena.startCombat();
     }
-
-    private boolean combatRound(Player player, Character enemy, Scanner sc, Listener listener) {
-
-        Arena combatArena = new ArenaImpl(player, enemy, listener);
-        combatArena.newRound();
+}
 
 
-
-//
+//  TODO use or remove
 //        int selectedOption = combatOptions(roundIndex, sc);
 //        roundIndex++;
 //
@@ -303,22 +271,3 @@ public class GameUI {
 //            //If player died and monster is still alive
 //            return false;
 //        }
-
-        //Call next round of combat
-        return combatRound(player, enemy, sc, listener);
-    }
-
-    private int combatOptions(int index, Scanner sc) {
-        System.out.println("\n\nRound " + index);
-        System.out.println("    1) Attack");
-        System.out.println("    2) Suicide");
-        int selected = sc.nextInt();
-        if (0 < selected && selected < 3) {
-            return selected;
-        } else {
-            //If numerous input is invalid -> ask again
-            System.out.println("            invalid input");
-            return combatOptions(index, sc);
-        }
-    }
-}

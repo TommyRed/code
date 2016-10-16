@@ -1,9 +1,7 @@
 package com.company.domain.impl;
 
+import com.company.domain.*;
 import com.company.domain.Character;
-import com.company.domain.Item;
-import com.company.domain.Option;
-import com.company.domain.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +19,7 @@ public class PlayerImpl implements Player {
     private List<Item> items;
     private List<Option> options;
     private WeaponImpl weapon;
+    private ArmorImpl armor;
 
     public PlayerImpl(String name) {
         this.name = name;
@@ -28,6 +27,35 @@ public class PlayerImpl implements Player {
         this.strength = rollDiceK6() + rollDiceK6();
         this.items = new ArrayList<>();
         this.options = new ArrayList<>();
+    }
+
+    @Override
+    public void usePotion(PotionImpl potion){
+        if (HP + potion.getPotionStrength() > 100) HP = 100;
+        else HP += potion.getPotionStrength();
+        dropItem(potion);
+
+        Option desiredOption = null;
+
+        for (Option option : options){
+            if (option.getItem() == potion) {
+                desiredOption = option;
+                break;
+            }
+        }
+
+        options.remove(desiredOption);
+    }
+
+    @Override
+    public boolean hasPotion(){
+        boolean flag = false;
+
+        for (Item item : items){
+            flag = item.getType() == ItemType.POTION;
+            if (flag) break;
+        }
+        return flag;
     }
 
     @Override
@@ -53,7 +81,7 @@ public class PlayerImpl implements Player {
     @Override
     public int getAttackNumber() {
         try {
-            return strength + rollDiceK6();
+            return weapon.getAttackNumber() + strength + rollDiceK6();
         } catch (NullPointerException err) {
             System.out.println("    " + this.name + " does not have a weapon");
         }
@@ -61,7 +89,7 @@ public class PlayerImpl implements Player {
     }
 
     @Override
-    public Item getWeapon() {
+    public WeaponImpl getWeapon() {
         try {
             return weapon;
         } catch (NullPointerException err) {
@@ -71,12 +99,32 @@ public class PlayerImpl implements Player {
     }
 
     @Override
-    public void setWeapon(WeaponImpl weapon) {
-        this.weapon = item;
+    public ArmorImpl getArmor() {
+        return armor;
     }
 
     @Override
-    public List getItems() {
+    public void removeWeapon() {
+        this.weapon = null;
+    }
+
+    @Override
+    public void removeArmor() {
+        this.armor = null;
+    }
+
+    @Override
+    public void setArmor(ArmorImpl armor) {
+        this.armor = armor;
+    }
+
+    @Override
+    public void setWeapon(WeaponImpl weapon) {
+        this.weapon = weapon;
+    }
+
+    @Override
+    public List<Item> getItems() {
         return items;
     }
 
@@ -115,10 +163,43 @@ public class PlayerImpl implements Player {
             System.out.println("\nThere are no items in " + this.name + "'s Inventory\n");
         else {
             System.out.println("\n  " + this.getName() + "'s Inventory: ");
-            //For each item held by player print out its name
-            items.forEach((item) -> System.out.println("        " + item.getName()));
+            printItems();
+            Listener listener = new ListenerImpl();
+            int option = listener.listenForIntWithin(-1, 4) - 1;
+
+            System.out.println("@   Inventory option: " + option);
+
+            if (option == -1) return;
+            else if (items.get(option).getType().getDefaultTitle().equals("Weapon")) {
+                System.out.println("Set weapon");
+                setWeapon((WeaponImpl) items.get(option));
+            }
+            else if (items.get(option).getType().getDefaultTitle().equals("Armor")) {
+                System.out.println("Set armor");
+                setArmor((ArmorImpl) items.get(option));
+            }
+            else if (items.get(option).getType().getDefaultTitle().equals("Potion")) {
+                System.out.println("Drink potion");
+                usePotion((PotionImpl) items.get(option));
+            }
         }
-        System.out.println("\n");
+    }
+
+    private int printItems(){
+        int index = 1;
+        System.out.println("Enter 0 for leaving inventory");
+
+        if (weapon != null) System.out.println("Weapon: " + weapon.getName());
+        if (armor != null) System.out.println("Armor: " + armor.getName());
+
+        for (Item item : this.items){
+            System.out.print("    - " + item.getName());
+            if (item.getType() == ItemType.WEAPON) System.out.println("     " + index + ") equip weapon");
+            else if (item.getType() == ItemType.ARMOR) System.out.println("     " + index + ") equip armor");
+            else if (item.getType() == ItemType.POTION) System.out.println("     " + index + ") use potion");
+            index++;
+        }
+        return index;
     }
 
     @Override

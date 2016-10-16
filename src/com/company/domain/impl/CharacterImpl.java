@@ -1,8 +1,7 @@
 package com.company.domain.impl;
 
+import com.company.domain.*;
 import com.company.domain.Character;
-import com.company.domain.Item;
-import com.company.domain.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,8 @@ public class CharacterImpl implements Character{
     private int HP;
     private int strength;
     private List<Item> items;
-    private Item weapon;
+    private WeaponImpl weapon;
+    private ArmorImpl armor;
 
     private static final int DRAKE = 1;
     private static final int ORC = 2;
@@ -37,37 +37,37 @@ public class CharacterImpl implements Character{
                 this.name = "Drake";
                 this.HP = 80;
                 this.strength = 15;
-//                this.weapon = new ItemImpl("Dragon's claw", 10, 15, 0);
+                this.weapon = (WeaponImpl) ItemType.WEAPON.createItem("Dragon's breath", 10);
                 break;
             case ORC:
                 this.name = "Orc";
                 this.HP = 100;
                 this.strength = 10;
-//                this.weapon = new ItemImpl("Orcish sword", 10, 10, 0);
+                this.weapon = (WeaponImpl) ItemType.WEAPON.createItem("Orcish sword", 10);
                 break;
             case GHOST:
                 this.name = "Ghost";
                 this.HP = 40;
                 this.strength = 6;
-//                this.weapon = new ItemImpl("Ghost's breath", 10, 10, 0);
+                this.weapon = (WeaponImpl) ItemType.WEAPON.createItem("Ghost's claw", 10);
                 break;
             case WOLF:
                 this.name = "Wolf";
                 this.HP = 50;
                 this.strength = 8;
-//                this.weapon = new ItemImpl("Wolfs's claw", 10, 8, 0);
+                this.weapon = (WeaponImpl) ItemType.WEAPON.createItem("Wolf's claw", 10);
                 break;
             case GOBLIN:
                 this.name = "Goblin";
                 this.HP = 35;
                 this.strength = 4;
-//                this.weapon = new ItemImpl("Goblin's dagger", 10, 5, 0);
+                this.weapon = (WeaponImpl) ItemType.WEAPON.createItem("Goblin dagger", 10);
                 break;
             case CHICKEN:
                 this.name = "Epic-Chicken";
                 this.HP = 10;
                 this.strength = 30;
-//                this.weapon = new ItemImpl("Chicken's epic beak", 10, 10, 0);
+                this.weapon = (WeaponImpl) ItemType.WEAPON.createItem("Epic-Ultra Chicken's beak", 10);
                 break;
         }
     }
@@ -82,20 +82,18 @@ public class CharacterImpl implements Character{
         return HP;
     }
 
-
     @Override
     public int getStrength() {
         return strength;
     }
 
-    // TODO
     @Override
     public int getAttackNumber(){
-//        try {
-//            return weapon.getAttackNumber() + strength + rollDiceK6();
-//        }catch (NullPointerException err){
-//            System.out.println("    " + this.name + " does not have a weapon");
-//        }
+        try {
+            return weapon.getAttackNumber() + strength + rollDiceK6();
+        }catch (NullPointerException err){
+            System.out.println("    " + this.name + " does not have a weapon");
+        }
         return strength + rollDiceK6();
     }
 
@@ -105,13 +103,33 @@ public class CharacterImpl implements Character{
     }
 
     @Override
-    public Item getWeapon(){
+    public WeaponImpl getWeapon(){
         try {
             return weapon;
         }catch (NullPointerException err){
             System.out.println("    " + this.name + " does not have a weapon");
         }
         return null;
+    }
+
+    @Override
+    public ArmorImpl getArmor() {
+        return armor;
+    }
+
+    @Override
+    public void removeWeapon() {
+        this.weapon = null;
+    }
+
+    @Override
+    public void removeArmor() {
+        this.armor = null;
+    }
+
+    @Override
+    public void setArmor(ArmorImpl armor) {
+        this.armor = armor;
     }
 
     @Override
@@ -151,7 +169,6 @@ public class CharacterImpl implements Character{
             //For each item held by player print out its name
             items.forEach((item) -> System.out.println("        " + item.getName()));
         }
-        System.out.println("\n");
     }
 
     @Override

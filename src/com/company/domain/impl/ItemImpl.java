@@ -8,7 +8,6 @@ import com.company.domain.ItemType;
  */
 public class ItemImpl implements Item {
     private String name;
-
     private ItemType type;
 
     public ItemImpl(String customName, ItemType type) {

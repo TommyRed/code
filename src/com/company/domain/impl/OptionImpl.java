@@ -75,17 +75,6 @@ public class OptionImpl implements Option {
     public int getID() {
         return idOfOption;
     }
-
-    @Override
-    public void printCharacterInfo(Character character) {
-        character.printCharacterInfo();
-    }
-
-    @Override
-    public void printCharacterInventory(Character character) {
-        character.printCharacterInventory();
-    }
-
     /*
         Remove item from location
         Add item to players inventory
@@ -111,5 +100,10 @@ public class OptionImpl implements Option {
     @Override
     public void doNothing(Player player) {
         // Useless function
+    }
+
+    @Override
+    public Item getItem() {
+        return referToItem;
     }
 }

@@ -6,11 +6,10 @@ package com.company.domain;
 public interface Option {
     String getText();
     int getID();
+    Item getItem();
 
     void processOption(Location location, Player character);
 
-    void printCharacterInfo(Character character);
-    void printCharacterInventory(Character character);
     void pickItem(Player character, Location location, Item item);
 
     void dropItem(Player character, Location location, Item item);

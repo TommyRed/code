@@ -5,7 +5,12 @@ package com.company.domain;
  */
 public interface Listener {
 
-    void onNewRound(Player player, Character enemy);
+    int onNewRound(Player player, Character enemy);
 
-    void onAttack(Character character);
+    void onAttack(Character character, int damage);
+
+    int listenForInt();
+    int listenForIntWithin(int from, int to);
+
+    boolean checkWithin(int from, int to, int actualNum);
 }

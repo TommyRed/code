@@ -8,6 +8,5 @@ public interface Arena {
     Player getPlayer();
     Character getEnemy();
 
-    void newRound();
-
+    boolean startCombat();
 }

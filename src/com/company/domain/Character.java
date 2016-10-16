@@ -1,5 +1,7 @@
 package com.company.domain;
 
+import com.company.domain.impl.ArmorImpl;
+import com.company.domain.impl.PotionImpl;
 import com.company.domain.impl.WeaponImpl;
 
 import java.util.List;
@@ -13,8 +15,13 @@ public interface Character {
     int getHP();
     int getAttackNumber();
     List<Item> getItems();
-    Item getWeapon();
+    WeaponImpl getWeapon();
+    ArmorImpl getArmor();
 
+    void removeWeapon();
+    void removeArmor();
+
+    void setArmor(ArmorImpl armor);
     void setWeapon(WeaponImpl weapon);
     void setHP(int HP);
 

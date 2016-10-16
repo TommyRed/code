@@ -23,6 +23,7 @@ public enum ItemType {
             return new PotionImpl(name, potionStrength, this);
         }
     };
+
     private final String defaultTitle;
 
     ItemType(String defaultTitle){

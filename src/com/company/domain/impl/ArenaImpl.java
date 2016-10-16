@@ -20,6 +20,39 @@ public class ArenaImpl implements Arena {
         this.listener = listener;
     }
 
+    private boolean newRound() {
+        int option = listener.onNewRound(player, enemy);
+
+        if (option == 1){
+            player.suicide();
+        } else if (option == 2){
+            int playerInitiative = player.rollDiceK6();
+            int enemyInitiative = enemy.rollDiceK6();
+
+            if (playerInitiative > enemyInitiative) {
+                attackRound(enemy, player);
+            } else {
+                attackRound(player, enemy);
+            }
+        }
+        if (player.getHP() <= 0) return false;
+        else return enemy.getHP() <= 0 || newRound();
+    }
+
+    private void attackRound(Character attacked, Character attacker){
+        attack(attacked, attacker.getAttackNumber());
+        if (attacked.getHP() > 0) attack(attacker, attacked.getAttackNumber());
+    }
+
+    private void attack(Character character, int attackNum) {
+        listener.onAttack(character, attackNum);
+        character.setHP(character.getHP() - attackNum);
+    }
+
+    public boolean startCombat(){
+        return newRound();
+    }
+
     @Override
     public Player getPlayer() {
         return player;
@@ -28,37 +61,5 @@ public class ArenaImpl implements Arena {
     @Override
     public Character getEnemy() {
         return enemy;
-    }
-
-    @Override
-    public void newRound() {
-        listener.onNewRound(player, enemy);
-
-        int playerInitiative = player.rollDiceK6();
-        int enemyInitiative = enemy.rollDiceK6();
-
-        if (playerInitiative > enemyInitiative) {
-            //Player attacks first
-
-            attack(enemy, player.getAttackNumber());
-            if (enemy.getHP() > 0)
-                attack(player, enemy.getAttackNumber());
-
-        } else if (enemyInitiative < playerInitiative) {
-            //Enemy attacks first
-
-            attack(player, enemy.getAttackNumber());
-            if (player.getHP() > 0)
-                attack(enemy, player.getAttackNumber());
-
-        } else {
-            //Player and Enemy are attacking simultaneously
-            attack(player, enemy.getAttackNumber());
-            attack(enemy, player.getAttackNumber());
-        }
-    }
-
-    private void attack(Character character, int attackNum) {
-        character.setHP(character.getHP() + attackNum);
     }
 }
