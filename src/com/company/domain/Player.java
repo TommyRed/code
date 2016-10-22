@@ -17,5 +17,6 @@ public interface Player extends Character {
     void dropItem(Item item);
 
     boolean hasPotion();
+    boolean isAlive();
     void usePotion(PotionImpl potion);
 }

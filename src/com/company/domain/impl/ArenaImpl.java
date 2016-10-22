@@ -21,7 +21,7 @@ public class ArenaImpl implements Arena {
     }
 
     private boolean newRound() {
-        int option = listener.onNewRound(player, enemy);
+        int option = listener.onNewCombatRound(player, enemy);
 
         if (option == 1){
             player.suicide();

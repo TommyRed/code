@@ -3,271 +3,78 @@ package com.company.ui;
 import com.company.domain.*;
 import com.company.domain.Character;
 import com.company.domain.impl.ArenaImpl;
+import com.company.domain.impl.DirectionOptionImpl;
+import com.company.domain.impl.ItemOptionImpl;
 import com.company.domain.impl.ListenerImpl;
 
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Created by semanticer on 3. 10. 2016.
  */
 public class GameUI {
 
-    //Array used for splitting directions / location options / player options
-    private int splitIndex[] = new int[2];
+    private Listener listener;
+    private Location location;
+    private Player player;
 
-    public void play(Location location, Player player) {
-        //Error more for programmer to know that he fooked up starting location
-        if (location == null) {
-            throw new IllegalArgumentException("startingLocation cannot be null");
-        }
+    public GameUI(Location location, Player player){
+        if (location == null) throw new IllegalArgumentException("StartingLocation cannot be null");
 
-        //Print name of current location
-        System.out.println("\n--------------------------------\nCurrent location: " +
-                location.getText() + "\n--------------------------------");
+        this.listener = new ListenerImpl();
+        this.location = location;
+        this.player = player;
+    }
 
-        /*
-            Check if location is safezone
-                true    -> Do not generate enemy
-                false   -> Generate enemy if player rolls preset values
-        */
-        if (!location.getSafety()) {
+    public void play() {
+        if (location == null) throw new IllegalArgumentException("Location cannot be null");
 
-            //Player rolls dices and based on its outcome generate enemy
+        if (!location.isSafe()) {
             Character enemy = location.generateEnemy(player);
 
-            //Check if enemy were generated
             if (enemy != null) {
-
-                //Call for combat function and wait for it's outcome
-                if (combat(enemy, player)) {
-                    //Print name of location after combat is done
-                    System.out.println("#-# Current location: " + location.getText() + " #-#");
-                }
+//                combat(enemy);
             }
         }
 
-        //Print options and direction only if player is alive
-        if (player.getHP() > 0) {
-            presentLocation(location, player);
-        }
+        if (player.isAlive()) {
+            List<Option> options = mergeOptions(location.getDirections(), location.getOptions(), player.getOptions());
+            presentLocation(options);
 
-        //Setup default location
-        Location nextLocation = location;
+            int inputUser = listener.listenForIntWithin(0, options.size() + 1) - 1;
 
-        //Setup default option
-        Option option = player.getOptions().get(0);
+            Option selectedOption = options.get(inputUser);
 
-        /*
-            Check if player is alive
-                true    -> offer options
-                false   -> proceed
-         */
-        if (player.getHP() > 0) {
-            //Scan for user input
-            Scanner sc = new Scanner(System.in);
-            System.out.println("\nEnter option from above\n");
+            if (selectedOption instanceof DirectionOptionImpl) location = ((DirectionOptionImpl) selectedOption).getLocation();
+            else processOption(selectedOption);
 
-            //Scan user's input and subtract 1
-            int inputUser = sc.nextInt() - 1;
-
-            //Check if user entered number equal to one of direction idexes
-            if (inputUser < splitIndex[0]) {
-                //
-                nextLocation = askForDirection(inputUser, location).getLocation();
-            } else {
-                option = askForOption(inputUser - splitIndex[0], location);
-
-                //If option equals null => there is no option for current location
-                if (option == null) {
-                    option = askForOption(inputUser - splitIndex[1], player);
-                }
-                //Process preset options
-                option.processOption(location, player);
-            }
-        }
-
-        //Check whether player is dead or not
-        if (endGame(player)) {
-            //Player died -> inform about end
-            System.out.println("\n\nThe End");
+            play();
         } else {
-            //player is still alive -> call for play function
-            play(nextLocation, player);
+//            listener.onEndGame(player);
+            endGame();
         }
     }
 
-    private void presentLocation(Location location, Player player) {
-
-        // If any item is located in this location -> print it out
-        if (!location.getItems().isEmpty()) {
-            //Print each item
-            location.getItems().forEach((item) -> System.out.println("\n......You see " + item.getName()));
-        }
-
-        //   Index is used for indexing both directions and options
-        int index = 1;
-
-        //Print header for directions
-        System.out.println("\nAvailable directions from this room");
-
-        //Print all available directions
-        index = printDirections(location.getDirections(), index);
-
-        //splitIndex[0] is used to split directions and options
-        splitIndex[0] = index - 1;
-
-        System.out.println("\nAvailable options for this room");
-
-        //Check whether there are any options in player's location
-        if (!location.getOptions().isEmpty()) {
-            //Print options available for location
-            index = printOptions(location.getOptions(), index);
-        }
-
-        //splitIndex[1] is used to split options for player and location
-        splitIndex[1] = index - 1;
-
-        //Check whether there are any options for player
-        if (!player.getOptions().isEmpty()) {
-            //Print options available for player
-            printOptions(player.getOptions(), index);
-        } else {
-            System.out.println("    ...there are no options for this room");
-        }
+    private void processOption(Option option){
+        System.out.println(option.getName());
     }
 
-    private int printDirections(List<Direction> directions, int index){
-        for (Direction direction : directions) {
-            //Print each option
-            System.out.println(index + ") " + direction.getName());
-            index++;
-        }
-        return index;
+    private void presentLocation(List<Option> options) {
+        listener.onNewRound(location, player, options);
     }
 
-    private int printOptions(List<Option> options, int index) {
-        for (Option option : options) {
-            //Print each option
-            System.out.println(index + ") " + option.getText());
-            index++;
-        }
-        return index;
+    private boolean combat(Character enemy) {
+        listener.onNewCombat(enemy);
+        return new ArenaImpl(player, enemy, listener).startCombat();
     }
 
-    //Ask for location options
-    private Option askForOption(int index, Location location) {
-        //If there is no available option return null
-        try {
-            return location.getOptions().get(index);
-        } catch (IndexOutOfBoundsException err) {
-            return null;
-        }
+    private List<Option> mergeOptions(List<Option> base, List<Option> firstAppended, List<Option> secondAppended) {
+        base.addAll(firstAppended);
+        base.addAll(secondAppended);
+        return base;
     }
 
-    private Option askForOption(int index, Player player) {
-        //Return option for player based on chosen index
-        return player.getOptions().get(index);
-    }
-
-    private Direction askForDirection(int index, Location location) {
-        //Return direction based on chosen index
-        return location.getDirections().get(index);
-    }
-
-    private boolean endGame(Character player) {
-        if (player.getHP() <= 0) return true;
-        else return false;
-    }
-
-    /*
-        TODO Combat system
-     */
-
-    private boolean combat(Character character, Player player) {
-        System.out.println("\n\n    You were attacked by " + character.getName());
-
-        Arena combatArena = new ArenaImpl(player, character, new ListenerImpl());
-
-        return combatArena.startCombat();
+    private void endGame() {
+        listener.onEndGame(player);
     }
 }
-
-
-//  TODO use or remove
-//        int selectedOption = combatOptions(roundIndex, sc);
-//        roundIndex++;
-//
-//        /*
-//            Player and enemy are rolling for initiative
-//            one with higher initiative attacks first
-//         */
-//        int playerInitiative = player.rollDiceK6();
-//        int enemyInitiative = enemy.rollDiceK6();
-//
-//        //If player selected suicide -> kill him
-//        if (selectedOption == 2)
-//            player.suicide();
-//
-//        //If player selected to attack proceed inside of condition
-//        if (selectedOption == 1) {
-//
-//            //Setup attack values for both characters
-//            int playersAtatck = enemy.rollDiceK6() - (player.getAttackNumber() + player.rollDiceK6());
-//            int enemysAttack = player.rollDiceK6() - (enemy.getAttackNumber() + enemy.rollDiceK6());
-//
-//            //If player has higher initiative => player attacks first
-//            if (playerInitiative > enemyInitiative) {
-//                //Player attacks first
-//                System.out.println(player.getName() + " attacks " + enemy.getName() + " | " + playersAtatck + "hp");
-//                //Player is attacking
-//                enemy.setHP(enemy.getHP() + playersAtatck);
-//
-//                //If enemy is still alive, then he attacks
-//                if (enemy.getHP() > 0) {
-//                    System.out.println(enemy.getName() + " attacks " + player.getName() + " |" + enemysAttack + "hp");
-//
-//                    //Player is attacking
-//                    player.setHP(player.getHP() + enemysAttack);
-//                }
-//            /*
-//                If both have the same initiative then both attack simultaneously
-//             */
-//            } else if (playerInitiative == enemyInitiative) {
-//                //Player and enemy are attacking simultaneously
-//                System.out.println(enemy.getName() + " attacks " + player.getName() + " | " + enemysAttack + "hp");
-//                System.out.println(player.getName() + " attacks " + enemy.getName() + " | " + playersAtatck + "hp");
-//
-//                //Enemy is attacking
-//                enemy.setHP(enemy.getHP() + playersAtatck);
-//                //Player is attacking
-//                player.setHP(player.getHP() + enemysAttack);
-//
-//                //If enemy has higher initiative => enemy attacks first
-//            } else {
-//                //Enemy attacks first
-//                System.out.println(enemy.getName() + " attacks " + player.getName() + " |" + enemysAttack + "hp");
-//
-//                //Player is attacking
-//                player.setHP(player.getHP() + enemysAttack);
-//
-//                if (player.getHP() > 0) {
-//                    System.out.println(player.getName() + " attacks " + enemy.getName() + " | " + playersAtatck + "hp");
-//
-//                    //Enemy is attacking
-//                    enemy.setHP(enemy.getHP() + playersAtatck);
-//                }
-//            }
-//        }
-//
-//        //Print enemy's and player's HP statuses
-//        System.out.println("\n  " + player.getName() + "'s HP: " + player.getHP() + "\n   " + enemy.getName() + "'s Hp: " + enemy.getHP());
-//
-//        //Check for kill
-//        if (enemy.getHP() <= 0 && player.getHP() > 0) {
-//            //If player is still alive and enemy is dead
-//            return true;
-//        } else if (enemy.getHP() > 0 && player.getHP() <= 0) {
-//            //If player died and monster is still alive
-//            return false;
-//        }

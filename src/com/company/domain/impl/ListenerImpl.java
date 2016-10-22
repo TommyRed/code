@@ -1,9 +1,7 @@
 package com.company.domain.impl;
 
+import com.company.domain.*;
 import com.company.domain.Character;
-import com.company.domain.Listener;
-import com.company.domain.Option;
-import com.company.domain.Player;
 
 import java.util.*;
 
@@ -19,17 +17,29 @@ public class ListenerImpl implements Listener {
     }
 
     @Override
-    public int onNewRound(Player player, Character enemy) {
+    public void onAttack(Character character, int damage) {
+        System.out.println(character.getName() + "'s HP: " + character.getHP() + " | -" + damage);
+    }
+
+    @Override
+    public void onEndGame(Player player) {
+        System.out.println("@   EndGame");
+        System.out.println("Great game " + player.getName());
+        System.out.println("    Cya next time!");
+    }
+
+    @Override
+    public void onNewRound(Location location, Player player, List<Option> options) {
+        System.out.println("\n    <- " + location.getText() + " ->");
+        printItems(location);
+        printOptions(options);
+    }
+
+    @Override
+    public int onNewCombatRound(Player player, Character enemy) {
         System.out.println(player.getName() + "'s HP: " + player.getHP() + "hp\n" +
                 enemy.getName() + "'s HP: " + enemy.getHP() + "hp");
         return roundOptions(player);
-    }
-
-    private int roundOptions(Player player){
-        System.out.println("1) Suicide");
-        System.out.println("2) Attack");
-        if (player.hasPotion()) System.out.println("3) Drink potion");
-        return listenForIntWithin(0, 4);
     }
 
     @Override
@@ -66,7 +76,31 @@ public class ListenerImpl implements Listener {
     }
 
     @Override
-    public void onAttack(Character character, int damage) {
-        System.out.println(character.getName() + "'s HP: " + character.getHP() + " | -" + damage);
+    public void onNewCombat(Character character) {
+        System.out.println("\n\n    You were attacked by " + character.getName());
     }
+
+    private int roundOptions(Player player){
+        System.out.println("1) Suicide");
+        System.out.println("2) Attack");
+        if (player.hasPotion()) System.out.println("3) Drink potion");
+        return listenForIntWithin(0, 4);
+    }
+
+    private void printItems(Location location) {
+        if (!location.getItems().isEmpty()) {
+            location.getItems().forEach((item) -> System.out.println("\n...You see " + item.getName()));
+        }
+    }
+
+    private int printOptions(List<Option> options) {
+        int index = 1;
+        System.out.println("\nAvailable options for this room");
+        for (Option option : options) {
+            System.out.println("    " + index + ") " + option.getName());
+            index++;
+        }
+        return index;
+    }
+
 }

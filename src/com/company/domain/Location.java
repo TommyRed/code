@@ -7,21 +7,21 @@ import java.util.List;
  */
 public interface Location {
     List<Option> getOptions();
-    List<Direction> getDirections();
+    List<Option> getDirections();
     List<Item> getItems();
 
     String getText();
-    boolean getSafety();
+    boolean isSafe();
     void setSafety(boolean safety);
 
-    void addOption(String text, int id);
+    void addOption(String name, Item item);
+    void addOption(String name, Location location);
     void addOption(Option option);
+    void removeOption(Option option);
 
     void addDirection(String name, Location targetedLocation);
 
     void addItem(Item item);
-    void addItem(String name, int durability, int attackNumber, int weight);
-
     void removeItem(Item item, Option option);
 
     Character generateEnemy(Player player);

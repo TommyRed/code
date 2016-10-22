@@ -37,12 +37,13 @@ public class PlayerImpl implements Player {
 
         Option desiredOption = null;
 
-        for (Option option : options){
-            if (option.getItem() == potion) {
-                desiredOption = option;
-                break;
-            }
-        }
+            // TODO
+//        for (Option option : options){
+//            if (option.getItem() == potion) {
+//                desiredOption = option;
+//                break;
+//            }
+//        }
 
         options.remove(desiredOption);
     }
@@ -214,12 +215,12 @@ public class PlayerImpl implements Player {
 
     @Override
     public void addOption(String text, int id, Item item) {
-        addOption(new OptionImpl(text, id, item));
+        addOption(new ItemOptionImpl(text, item));
     }
 
     @Override
     public void addOption(String text, int id) {
-        addOption(new OptionImpl(text, id));
+        addOption(new OptionImpl(text));
     }
 
     @Override
@@ -230,5 +231,10 @@ public class PlayerImpl implements Player {
     @Override
     public void removeOption(Option option) {
         options.remove(option);
+    }
+
+    @Override
+    public boolean isAlive() {
+        return HP > 0;
     }
 }

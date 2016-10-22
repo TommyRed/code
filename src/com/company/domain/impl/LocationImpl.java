@@ -11,11 +11,11 @@ import java.util.List;
  */
 public class LocationImpl implements Location {
 
-    String name;
-    boolean safeZone;
-    List<Option> options;
-    List<Direction> directions;
-    List<Item> items;
+    private String name;
+    private boolean safeZone;
+    private List<Option> options;
+    private List<Option> directions;
+    private List<Item> items;
 
     public LocationImpl(String name) {
         this.name = name;
@@ -23,74 +23,6 @@ public class LocationImpl implements Location {
         this.directions = new ArrayList<>();
         this.items = new ArrayList<>();
         this.options = new ArrayList<>();
-    }
-
-    @Override
-    public List<Option> getOptions() {
-        return options;
-    }
-
-    @Override
-    public List<Direction> getDirections() {
-        return directions;
-    }
-
-    @Override
-    public String getText() {
-        return name;
-    }
-
-    @Override
-    public void addOption(String text, int id) {
-        addOption(new OptionImpl(text, id));
-    }
-
-    @Override
-    public void addOption(Option option) {
-        options.add(option);
-    }
-
-    @Override
-    public boolean getSafety() {
-        return safeZone;
-    }
-
-    @Override
-    public void setSafety(boolean safety) {
-        System.out.println(this.name + " is safe location");
-        this.safeZone = safety;
-    }
-
-    @Override
-    public void addDirection(String name, Location targetedLocation) {
-        directions.add(new DirectionImpl(name, targetedLocation));
-    }
-
-    @Override
-    public List<Item> getItems() {
-        return items;
-    }
-    /*
-        Add new item to the location
-     */
-    @Override
-    public void addItem(String name, int durability, int attackNumber, int weight) {
-//        addItem(new ItemImpl(name, durability, attackNumber, weight));
-    }
-
-    /*
-        Add already existing item to the location
-     */
-    @Override
-    public void addItem(Item item) {
-        items.add(item);
-        options.add(new OptionImpl("Pick " + item.getName(), 3, items.get(items.size() - 1)));
-    }
-
-    @Override
-    public void removeItem(Item item, Option option) {
-        items.remove(item);
-        options.remove(option);
     }
 
     @Override
@@ -112,4 +44,79 @@ public class LocationImpl implements Location {
         }
         return null;
     }
+
+    /*
+     * Setters
+     */
+    @Override
+    public void addItem(Item item) {
+        items.add(item);
+        options.add(new ItemOptionImpl("Pick " + item.getName(), items.get(items.size() - 1)));
+    }
+
+    @Override
+    public void addDirection(String name, Location targetedLocation) {
+        directions.add(new DirectionOptionImpl(name, targetedLocation));
+    }
+
+    @Override
+    public void addOption(String text, Item item) {
+        addOption(new ItemOptionImpl(text, item));
+    }
+
+    @Override
+    public void addOption(String text, Location location) {
+        addOption(new DirectionOptionImpl(text, location));
+    }
+
+    @Override
+    public void addOption(Option option) {
+        options.add(option);
+    }
+
+    @Override
+    public void removeOption(Option option) {
+        options.remove(option);
+    }
+
+    @Override
+    public void removeItem(Item item, Option option) {
+        items.remove(item);
+        removeOption(option);
+    }
+
+    @Override
+    public void setSafety(boolean safety) {
+        System.out.println("@   " + this.name + " is safe location");
+        this.safeZone = safety;
+    }
+
+    /*
+     *  Getters
+     */
+    @Override
+    public List<Item> getItems() {
+        return items;
+    }
+
+    @Override
+    public List<Option> getOptions() {
+        return options;
+    }
+
+    @Override
+    public List<Option> getDirections() {
+        return directions;
+    }
+
+    @Override
+    public String getText() {
+        return name;
+    }
+
+    @Override
+    public boolean isSafe() {
+        return safeZone;
+    }
+
 }

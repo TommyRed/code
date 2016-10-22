@@ -12,8 +12,8 @@ public class Main {
     public static void main(String[] args) {
         Location startingLocation = createGame();
         Player player = createPlayer();
-        GameUI gameUI = new GameUI();
-        gameUI.play(startingLocation, player);
+        GameUI gameUI = new GameUI(startingLocation, player);
+        gameUI.play();
     }
 
     private static Location createGame() {
@@ -38,7 +38,8 @@ public class Main {
         hallway.addDirection("Go to the living room", livingRoom);
         hallway.addDirection("Go upstairs", upstairs);
         hallway.setSafety(true);
-//        hallway.addOption("Open lock on doors to the outside", 5);
+        hallway.addItem(ItemType.ARMOR.createItem("Leather Armor", 10));
+        hallway.addOption(new OptionImpl("I love Denisa!"));
 
         /*
             Available directions
@@ -77,13 +78,9 @@ public class Main {
 
         Player player = new PlayerImpl(sc.nextLine());
         player.printCharacterInfo();
-        player.addOption("Do nothing and rest", 0);
-        player.addOption("Suicide", 66);
-        player.addOption("Look into inventory", 2);
 
         player.setWeapon((WeaponImpl) ItemType.WEAPON.createItem("Sword", 10));
         player.addItem(player.getWeapon());
-        player.addOption("Drop " + player.getWeapon().getName(), 4, player.getWeapon());
 
         return player;
     }
