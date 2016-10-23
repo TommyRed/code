@@ -1,5 +1,7 @@
 package com.company.domain;
 
+import com.company.domain.impl.Option.ItemOptionTypes;
+
 import java.util.List;
 
 /**
@@ -14,7 +16,7 @@ public interface Location {
     boolean isSafe();
     void setSafety(boolean safety);
 
-    void addOption(String name, Item item);
+    void addOption(String name, Item item, ItemOptionTypes type);
     void addOption(String name, Location location);
     void addOption(Option option);
     void removeOption(Option option);

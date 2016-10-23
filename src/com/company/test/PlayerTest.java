@@ -1,7 +1,7 @@
 package com.company.test;
 
 import com.company.domain.Player;
-import com.company.domain.impl.PlayerImpl;
+import com.company.domain.impl.Character.PlayerImpl;
 
 import static org.junit.Assert.assertEquals;
 

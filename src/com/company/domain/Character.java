@@ -1,8 +1,7 @@
 package com.company.domain;
 
-import com.company.domain.impl.ArmorImpl;
-import com.company.domain.impl.PotionImpl;
-import com.company.domain.impl.WeaponImpl;
+import com.company.domain.impl.Item.ArmorImpl;
+import com.company.domain.impl.Item.WeaponImpl;
 
 import java.util.List;
 
@@ -26,7 +25,6 @@ public interface Character {
     void setHP(int HP);
 
     int rollDiceK6();
-    int rollDiceK12();
 
     void printCharacterInfo();
     void printCharacterInventory();

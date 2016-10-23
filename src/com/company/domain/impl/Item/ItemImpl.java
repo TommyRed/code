@@ -1,4 +1,4 @@
-package com.company.domain.impl;
+package com.company.domain.impl.Item;
 
 import com.company.domain.Item;
 import com.company.domain.ItemType;

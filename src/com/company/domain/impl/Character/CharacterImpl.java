@@ -1,7 +1,9 @@
-package com.company.domain.impl;
+package com.company.domain.impl.Character;
 
 import com.company.domain.*;
 import com.company.domain.Character;
+import com.company.domain.impl.Item.ArmorImpl;
+import com.company.domain.impl.Item.WeaponImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ public class CharacterImpl implements Character{
     private static final int GOBLIN = 5;
     private static final int CHICKEN = 6;
 
-    CharacterImpl(int monsterType) {
+    public CharacterImpl(int monsterType) {
         this.items = new ArrayList<>();
         createMonster(monsterType);
     }
@@ -146,11 +148,6 @@ public class CharacterImpl implements Character{
     public int rollDiceK6() {
         Random r = new Random();
         return r.nextInt(6 - 1) + 1;
-    }
-
-    @Override
-    public int rollDiceK12() {
-        return rollDiceK6() + rollDiceK6();
     }
 
     @Override

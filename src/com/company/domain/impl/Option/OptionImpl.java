@@ -1,4 +1,4 @@
-package com.company.domain.impl;
+package com.company.domain.impl.Option;
 
 import com.company.domain.*;
 

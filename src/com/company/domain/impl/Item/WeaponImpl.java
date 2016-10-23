@@ -1,4 +1,4 @@
-package com.company.domain.impl;
+package com.company.domain.impl.Item;
 
 
 import com.company.domain.ItemType;
@@ -6,7 +6,7 @@ import com.company.domain.ItemType;
 /**
  * Created by Tomáš Rechtig on 15.10.2016.
  */
-public class WeaponImpl extends ItemImpl{
+public class WeaponImpl extends ItemImpl {
 
     private final int attackNumber;
 

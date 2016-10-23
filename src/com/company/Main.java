@@ -2,9 +2,13 @@ package com.company;
 
 import com.company.domain.*;
 import com.company.domain.impl.*;
+import com.company.domain.impl.Character.PlayerImpl;
+import com.company.domain.impl.Item.WeaponImpl;
+import com.company.domain.impl.Option.OptionImpl;
+import com.company.domain.impl.Option.PlayerOptionImpl;
+import com.company.domain.impl.Option.PlayerOptionTypes;
 import com.company.ui.GameUI;
 
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -39,14 +43,13 @@ public class Main {
         hallway.addDirection("Go upstairs", upstairs);
         hallway.setSafety(true);
         hallway.addItem(ItemType.ARMOR.createItem("Leather Armor", 10));
-        hallway.addOption(new OptionImpl("I love Denisa!"));
 
         /*
             Available directions
             -> ground hallway
          */
         kitchen.addDirection("Go to the hallway", hallway);
-        kitchen.addItem(ItemType.ARMOR.createItem("Leather Armor", 10));
+        kitchen.addItem(ItemType.ARMOR.createItem("Kokot", 10));
 
         /*
             Available directions
@@ -78,6 +81,10 @@ public class Main {
 
         Player player = new PlayerImpl(sc.nextLine());
         player.printCharacterInfo();
+
+        player.addOption("Suicide", PlayerOptionTypes.SUICIDE);
+        player.addOption("Show player info", PlayerOptionTypes.VIEWCHARACTERINFO);
+        player.addOption("Show inventory", PlayerOptionTypes.VIEWINVENTORY);
 
         player.setWeapon((WeaponImpl) ItemType.WEAPON.createItem("Sword", 10));
         player.addItem(player.getWeapon());

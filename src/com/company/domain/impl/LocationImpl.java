@@ -2,6 +2,10 @@ package com.company.domain.impl;
 
 import com.company.domain.*;
 import com.company.domain.Character;
+import com.company.domain.impl.Character.CharacterImpl;
+import com.company.domain.impl.Option.DirectionOptionImpl;
+import com.company.domain.impl.Option.ItemOptionImpl;
+import com.company.domain.impl.Option.ItemOptionTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +31,7 @@ public class LocationImpl implements Location {
 
     @Override
     public Character generateEnemy(Player player) {
-        int playersLuck = player.rollDiceK12() + player.rollDiceK12();
+        int playersLuck = player.rollDiceK6() + player.rollDiceK6() + player.rollDiceK6() + player.rollDiceK6();
         switch (playersLuck){
             case 2:
                 return new CharacterImpl(6);
@@ -51,7 +55,7 @@ public class LocationImpl implements Location {
     @Override
     public void addItem(Item item) {
         items.add(item);
-        options.add(new ItemOptionImpl("Pick " + item.getName(), items.get(items.size() - 1)));
+        options.add(new ItemOptionImpl("Pick " + item.getName(), items.get(items.size() - 1), ItemOptionTypes.PICKITEM));
     }
 
     @Override
@@ -60,8 +64,8 @@ public class LocationImpl implements Location {
     }
 
     @Override
-    public void addOption(String text, Item item) {
-        addOption(new ItemOptionImpl(text, item));
+    public void addOption(String text, Item item, ItemOptionTypes type) {
+        addOption(new ItemOptionImpl(text, item, type));
     }
 
     @Override

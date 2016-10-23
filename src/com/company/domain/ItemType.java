@@ -1,8 +1,8 @@
 package com.company.domain;
 
-import com.company.domain.impl.ArmorImpl;
-import com.company.domain.impl.PotionImpl;
-import com.company.domain.impl.WeaponImpl;
+import com.company.domain.impl.Item.ArmorImpl;
+import com.company.domain.impl.Item.PotionImpl;
+import com.company.domain.impl.Item.WeaponImpl;
 
 /**
  * Created by Tomáš Rechtig on 15.10.2016.
