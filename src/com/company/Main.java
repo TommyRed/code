@@ -4,9 +4,7 @@ import com.company.domain.*;
 import com.company.domain.impl.*;
 import com.company.domain.impl.Character.PlayerImpl;
 import com.company.domain.impl.Item.WeaponImpl;
-import com.company.domain.impl.Option.OptionImpl;
-import com.company.domain.impl.Option.PlayerOptionImpl;
-import com.company.domain.impl.Option.PlayerOptionTypes;
+import com.company.domain.impl.Option.Types.PlayerOptionTypes;
 import com.company.ui.GameUI;
 
 import java.util.Scanner;

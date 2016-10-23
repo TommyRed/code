@@ -9,8 +9,9 @@ public interface Listener {
     void onAttack(Character character, int damage);
     void onEndGame(Player player);
     void onNewRound(Location location, Player player, List<Option> options);
-    int onNewCombatRound(Player player, Character enemy);
+    void onNewCombatRound(Player player, Character enemy, List<Option> options);
     void onNewCombat(Character character);
+    void onCombatInitiative(Character character, int initiative);
 
     int listenForInt();
     int listenForIntWithin(int from, int to);

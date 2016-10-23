@@ -30,14 +30,9 @@ public class GameUI {
     }
 
     public void play() {
-        if (location == null) throw new IllegalArgumentException("Location cannot be null");
 
         if (!location.isSafe()) {
-            Character enemy = location.generateEnemy(player);
-
-            if (enemy != null) {
-                combat(enemy);
-            }
+            combat();
         }
 
         if (player.isAlive()) {
@@ -63,9 +58,10 @@ public class GameUI {
         request.setLocation(location);
     }
 
-    private boolean combat(Character enemy) {
-        listener.onNewCombat(enemy);
-        return new ArenaImpl(player, enemy, listener).startCombat();
+    private void combat() {
+        Character enemy = location.generateEnemy(player);
+
+        if (enemy != null) new ArenaImpl(player, enemy, listener, request).startCombat();
     }
 
     private List<Option> mergeOptions() {

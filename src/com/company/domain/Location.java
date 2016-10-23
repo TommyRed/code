@@ -1,6 +1,6 @@
 package com.company.domain;
 
-import com.company.domain.impl.Option.ItemOptionTypes;
+import com.company.domain.impl.Option.Types.ItemOptionTypes;
 
 import java.util.List;
 

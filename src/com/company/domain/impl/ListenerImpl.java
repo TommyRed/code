@@ -16,11 +16,11 @@ public class ListenerImpl implements Listener {
         this.scanner = new Scanner(System.in);
     }
 
-    @Override
-    public void onAttack(Character character, int damage) {
-        System.out.println(character.getName() + "'s HP: " + character.getHP() + " | -" + damage);
-    }
+    /*
+     *  "on" event listener functions
+     */
 
+    //  Game related functions
     @Override
     public void onEndGame(Player player) {
         System.out.println("@   EndGame");
@@ -35,13 +35,37 @@ public class ListenerImpl implements Listener {
         printOptions(options);
     }
 
+    //  Combat related functions
     @Override
-    public int onNewCombatRound(Player player, Character enemy) {
-        System.out.println(player.getName() + "'s HP: " + player.getHP() + "hp\n" +
-                enemy.getName() + "'s HP: " + enemy.getHP() + "hp");
-        return roundOptions(player);
+    public void onNewCombat(Character character) {
+        System.out.println("\n\n    You were attacked by " + character.getName());
     }
 
+    @Override
+    public void onNewCombatRound(Player player, Character enemy, List<Option> options) {
+        System.out.println(player.getName() + "'s HP: " + player.getHP() + "hp\n" +
+                enemy.getName() + "'s HP: " + enemy.getHP() + "hp");
+        int index = 1;
+        for (Option option : options) {
+            System.out.println(index + ") " + option.getName());
+            index++;
+        }
+        System.out.println("Select option");
+    }
+
+    @Override
+    public void onCombatInitiative(Character character, int initiative){
+        System.out.println(character.getName() + "'s initiative: " + initiative);
+    }
+
+    @Override
+    public void onAttack(Character character, int damage) {
+        System.out.println(character.getName() + "'s HP: " + character.getHP() + " | -" + damage);
+    }
+
+    /*
+     *  Utility listener functions
+     */
     @Override
     public int listenForInt() {
         int userInput;
@@ -75,10 +99,6 @@ public class ListenerImpl implements Listener {
         return (from < actualNum && actualNum < to);
     }
 
-    @Override
-    public void onNewCombat(Character character) {
-        System.out.println("\n\n    You were attacked by " + character.getName());
-    }
 
     private int roundOptions(Player player){
         System.out.println("1) Suicide");
@@ -95,12 +115,11 @@ public class ListenerImpl implements Listener {
 
     private int printOptions(List<Option> options) {
         int index = 1;
-        System.out.println("\nAvailable options for this room");
+        System.out.println("\nAvailable options");
         for (Option option : options) {
             System.out.println("    " + index + ") " + option.getName());
             index++;
         }
         return index;
     }
-
 }

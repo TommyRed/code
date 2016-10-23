@@ -1,6 +1,7 @@
 package com.company.domain.impl.Option;
 
 import com.company.domain.Player;
+import com.company.domain.impl.Option.Types.PlayerOptionTypes;
 
 /**
  * Created by Tomáš Rechtig on 22.10.2016.

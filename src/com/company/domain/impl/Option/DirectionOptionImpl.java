@@ -14,10 +14,6 @@ public class DirectionOptionImpl extends OptionImpl {
         this.location = location;
     }
 
-    public void createMoveOption(){
-
-    }
-
     public Location getLocation(){
         return location;
     }

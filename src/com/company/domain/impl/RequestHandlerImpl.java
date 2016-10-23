@@ -1,6 +1,7 @@
 package com.company.domain.impl;
 
 import com.company.domain.*;
+import com.company.domain.impl.Item.PotionImpl;
 import com.company.domain.impl.Option.DirectionOptionImpl;
 import com.company.domain.impl.Option.ItemOptionImpl;
 import com.company.domain.impl.Option.PlayerOptionImpl;
@@ -21,6 +22,8 @@ public class RequestHandlerImpl implements RequestHandler {
         this.listener = listener;
     }
 
+
+    //  Game related option processing
     @Override
     public void processOption(Option option) {
         System.out.println("@   -" + option.getName());
@@ -28,8 +31,7 @@ public class RequestHandlerImpl implements RequestHandler {
         else if (option instanceof PlayerOptionImpl) handlePlayerOptions((PlayerOptionImpl) option);
     }
 
-    @Override
-    public void handlePlayerOptions(PlayerOptionImpl option) {
+    private void handlePlayerOptions(PlayerOptionImpl option) {
         System.out.println("@   Handle Player option");
         switch (option.getOptionType()) {
             case SUICIDE:
@@ -44,10 +46,9 @@ public class RequestHandlerImpl implements RequestHandler {
         }
     }
 
-    @Override
-    public void handleItemOptions(ItemOptionImpl option) {
+    private void handleItemOptions(ItemOptionImpl option) {
         System.out.println("@   Handle Item option");
-        switch (option.getType()) {
+        switch (option.getOptionType()) {
             case PICKITEM:
                 player.addItem(option.getItem());
                 location.removeItem(option.getItem(), option);
@@ -56,12 +57,15 @@ public class RequestHandlerImpl implements RequestHandler {
                 player.removeItem(option.getItem(), option);
                 location.addItem(option.getItem());
                 break;
+            case USEPOTION:
+                player.usePotion((PotionImpl) option.getItem());
+                break;
         }
     }
 
     /*
-     *  Setters
-     */
+         *  Setters
+         */
     @Override
     public void setLocation(Location location) {
         this.location = location;

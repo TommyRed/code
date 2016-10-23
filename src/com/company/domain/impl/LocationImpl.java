@@ -5,7 +5,7 @@ import com.company.domain.Character;
 import com.company.domain.impl.Character.CharacterImpl;
 import com.company.domain.impl.Option.DirectionOptionImpl;
 import com.company.domain.impl.Option.ItemOptionImpl;
-import com.company.domain.impl.Option.ItemOptionTypes;
+import com.company.domain.impl.Option.Types.ItemOptionTypes;
 
 import java.util.ArrayList;
 import java.util.List;

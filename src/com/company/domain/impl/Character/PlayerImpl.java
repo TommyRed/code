@@ -6,6 +6,8 @@ import com.company.domain.impl.Item.PotionImpl;
 import com.company.domain.impl.Item.WeaponImpl;
 import com.company.domain.impl.ListenerImpl;
 import com.company.domain.impl.Option.*;
+import com.company.domain.impl.Option.Types.ItemOptionTypes;
+import com.company.domain.impl.Option.Types.PlayerOptionTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ public class PlayerImpl implements Player {
 
     public PlayerImpl(String name) {
         this.name = name;
-        this.HP = 100;
+        this.HP = 60;
         this.strength = rollDiceK6() + rollDiceK6();
         this.items = new ArrayList<>();
         this.options = new ArrayList<>();
@@ -38,30 +40,25 @@ public class PlayerImpl implements Player {
         else HP += potion.getPotionStrength();
         removeItem(potion);
 
-        Option desiredOption = null;
-
-            // TODO
-//        for (Option option : options){
-//            if (option.getItem() == potion) {
-//                desiredOption = option;
-//                break;
-//            }
-//        }
-
-        options.remove(desiredOption);
+        for (Option option : options){
+            if (option instanceof ItemOptionImpl && ((ItemOptionImpl) option).getItem() == potion) {
+                options.remove(option);
+                break;
+            }
+        }
     }
 
     private int printItems(){
         int index = 1;
         System.out.println("Enter 0 for leaving inventory");
 
-        if (weapon != null) System.out.println("Weapon: " + weapon.getName());
-        if (armor != null) System.out.println("Armor: " + armor.getName());
+        if (weapon != null) System.out.println("     Weapon: " + weapon.getName());
+        if (armor != null) System.out.println("     Armor: " + armor.getName());
 
         for (Item item : this.items){
             System.out.print("    - " + item.getName());
-            if (item.getType() == ItemType.WEAPON) System.out.println("     " + index + ") equip weapon");
-            else if (item.getType() == ItemType.ARMOR) System.out.println("     " + index + ") equip armor");
+            if (item.getType() == ItemType.WEAPON && item != weapon) System.out.println("     " + index + ") equip weapon");
+            else if (item.getType() == ItemType.ARMOR && item != armor) System.out.println("     " + index + ") equip armor");
             else if (item.getType() == ItemType.POTION) System.out.println("     " + index + ") use potion");
             index++;
         }
@@ -76,8 +73,9 @@ public class PlayerImpl implements Player {
 
     @Override
     public void printCharacterInfo() {
-        System.out.println("\n  Character name: " + this.name + "\n   " +
-                "Character strength: " + this.strength + "\n");
+        System.out.println(this.name + "\n   " +
+                this.name + "'s strength: " + this.strength + "\n   " +
+                this.name + "'s HP: " + this.HP);
     }
 
     @Override
@@ -88,21 +86,20 @@ public class PlayerImpl implements Player {
         else {
             System.out.println("\n  " + this.getName() + "'s Inventory: ");
             printItems();
-            Listener listener = new ListenerImpl();
-            int option = listener.listenForIntWithin(-1, 4) - 1;
+            int option = new ListenerImpl().listenForIntWithin(-1, 4) - 1;
 
             System.out.println("@   Inventory option: " + option);
 
             if (option == -1) return;
-            else if (items.get(option).getType().getDefaultTitle().equals("Weapon")) {
+            else if (items.get(option).getType() == ItemType.WEAPON) {
                 System.out.println("Set weapon");
                 setWeapon((WeaponImpl) items.get(option));
             }
-            else if (items.get(option).getType().getDefaultTitle().equals("Armor")) {
+            else if (items.get(option).getType() == ItemType.ARMOR) {
                 System.out.println("Set armor");
                 setArmor((ArmorImpl) items.get(option));
             }
-            else if (items.get(option).getType().getDefaultTitle().equals("Potion")) {
+            else if (items.get(option).getType() == ItemType.POTION) {
                 System.out.println("Drink potion");
                 usePotion((PotionImpl) items.get(option));
             }
@@ -117,7 +114,6 @@ public class PlayerImpl implements Player {
     /*
      *  Removes
      */
-
     @Override
     public void removeOption(Option option) {
         options.remove(option);
@@ -142,6 +138,8 @@ public class PlayerImpl implements Player {
     @Override
     public void removeItem(Item item) {
         items.remove(item);
+        if (item == weapon) removeWeapon();
+        else if (item == armor) removeArmor();
     }
 
     /*
@@ -251,5 +249,13 @@ public class PlayerImpl implements Player {
             if (flag) break;
         }
         return flag;
+    }
+
+    @Override
+    public PotionImpl getPotion(){
+        for (Item item : items) {
+            if (item instanceof PotionImpl) return (PotionImpl) item;
+        }
+        return null;
     }
 }

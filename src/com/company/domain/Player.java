@@ -1,8 +1,8 @@
 package com.company.domain;
 
 import com.company.domain.impl.Item.PotionImpl;
-import com.company.domain.impl.Option.ItemOptionTypes;
-import com.company.domain.impl.Option.PlayerOptionTypes;
+import com.company.domain.impl.Option.Types.ItemOptionTypes;
+import com.company.domain.impl.Option.Types.PlayerOptionTypes;
 
 import java.util.List;
 
@@ -20,6 +20,7 @@ public interface Player extends Character {
     void removeItem(Item item, Option option);
 
     boolean hasPotion();
+    PotionImpl getPotion();
     boolean isAlive();
     void usePotion(PotionImpl potion);
 }

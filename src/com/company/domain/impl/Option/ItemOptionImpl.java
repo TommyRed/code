@@ -1,6 +1,7 @@
 package com.company.domain.impl.Option;
 
 import com.company.domain.Item;
+import com.company.domain.impl.Option.Types.ItemOptionTypes;
 
 /**
  * Created by Tomáš Rechtig on 17.10.2016.
@@ -20,7 +21,7 @@ public class ItemOptionImpl extends OptionImpl {
         return item;
     }
 
-    public ItemOptionTypes getType() {
+    public ItemOptionTypes getOptionType() {
         return type;
     }
 }
